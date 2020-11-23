@@ -42,25 +42,29 @@ public class WebServer {
 			// remote is now the connected socket
 			System.out.println("Connection, sending data.");
 			BufferedReader in = new BufferedReader(new InputStreamReader(remote.getInputStream()));
-			BufferedOutputStream out = new BufferedOutputStream(remote.getOutputStream());
+			PrintWriter out = new PrintWriter(remote.getOutputStream());
 
 			// read the data sent. We basically ignore it,
 			// stop reading once a blank line is hit. This
 			// blank line signals the end of the client HTTP
 			// headers.
 			String str = ".";
-			while (str != null && !str.equals(""))
+			String request = in.readLine();
+			while (str != null && !str.equals("")) {
 				str = in.readLine();
+			}
+			System.out.println(request);
 
 			// Send the response
-				String[] words = str.split(" ");
-				String requestType = words[0];
-				String fileName = words[1].substring(1, words[1].length());
-				if(requestType.equals("GET")) {
-					httpGET(out, fileName);
-				}
+			String[] words = request.split(" ");
+			String requestType = words[0];
+			System.out.println(requestType);
+			String fileName = words[1].substring(1, words[1].length());
+			if(requestType.equals("GET")) {
+				httpGET(out, fileName);
+			}
 			// Send the HTML page
-			out.write("<H1>Welcome to the Ultra Mini-WebServer</H2>".getBytes());
+			out.write("<H1>Welcome to the Ultra Mini-WebServer</H2>");
 			out.flush();
 			remote.close();
 			} catch (Exception e) {
@@ -70,26 +74,27 @@ public class WebServer {
 	}
 
 	//HTTP GET method
-	protected void httpGET(BufferedOutputStream out, String filename){
+	protected void httpGET(PrintWriter out, String filename){
 		System.out.println("GET " + filename);
 		try{
 			File file = new File(filename);
 			if(file.exists() && file.isFile()){
 				System.out.println("200 OK");
-				out.write(makeHeader("200 OK", filename, file.length()).getBytes());
+				out.write(makeHeader("200 OK", filename, file.length()));
 			}else{
 				file = new File("file_not_found.html");
 				System.out.println("200 OK");
-				out.write(makeHeader("404 Not Found", "file_not_found.html", file.length()).getBytes());
+				out.write(makeHeader("404 Not Found", "file_not_found.html", file.length()));
 			}
 
-			BufferedInputStream input = new BufferedInputStream(new FileInputStream(file));
-			byte [] buffer = new byte[256];
+			BufferedInputStream fileIn = new BufferedInputStream(new FileInputStream(file));
+			// Envoi du corps : le fichier (page HTML, image, vid�o...)
+			byte[] buffer = new byte[256];
 			int nbRead;
-			while((nbRead = input.read(buffer)) != -1) {
-				out.write(buffer, 0, nbRead);
+			while((nbRead = fileIn.read(buffer)) != -1) {
+				out.println(String.valueOf(buffer));
 			}
-			input.close();
+			fileIn.close();
 
 			out.flush();
 		}catch(IOException e){
