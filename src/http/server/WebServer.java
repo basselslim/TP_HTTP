@@ -42,7 +42,7 @@ public class WebServer {
 			// remote is now the connected socket
 			System.out.println("Connection, sending data.");
 			BufferedReader in = new BufferedReader(new InputStreamReader(remote.getInputStream()));
-			PrintWriter out = new PrintWriter(remote.getOutputStream());
+			BufferedOutputStream out = new BufferedOutputStream(remote.getOutputStream());
 
 			// read the data sent. We basically ignore it,
 			// stop reading once a blank line is hit. This
@@ -53,14 +53,14 @@ public class WebServer {
 				str = in.readLine();
 
 			// Send the response
-			// Send the headers
-			out.println("HTTP/1.0 200 OK");
-			out.println("Content-Type: text/html");
-			out.println("Server: Bot");
-			// this blank line signals the end of the headers
-			out.println("");
+				String[] words = str.split(" ");
+				String requestType = words[0];
+				String fileName = words[1].substring(1, words[1].length());
+				if(requestType.equals("GET")) {
+					httpGET(out, fileName);
+				}
 			// Send the HTML page
-			out.println("<H1>Welcome to the Ultra Mini-WebServer</H2>");
+			out.write("<H1>Welcome to the Ultra Mini-WebServer</H2>".getBytes());
 			out.flush();
 			remote.close();
 			} catch (Exception e) {
@@ -76,11 +76,11 @@ public class WebServer {
 			File file = new File(filename);
 			if(file.exists() && file.isFile()){
 				System.out.println("200 OK");
-				out.write("".getBytes());
+				out.write(makeHeader("200 OK", filename, file.length()).getBytes());
 			}else{
-				//file = new File("file_not_found.html");
+				file = new File("file_not_found.html");
 				System.out.println("200 OK");
-				out.write("".getBytes());
+				out.write(makeHeader("404 Not Found", "file_not_found.html", file.length()).getBytes());
 			}
 
 			BufferedInputStream input = new BufferedInputStream(new FileInputStream(file));
