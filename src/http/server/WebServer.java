@@ -76,15 +76,16 @@ public class WebServer {
 	//HTTP GET method
 	protected void httpGET(PrintWriter out, String filename){
 		System.out.println("GET " + filename);
+		filename = "doc/" + filename;
 		try{
 			File file = new File(filename);
 			if(file.exists() && file.isFile()){
 				System.out.println("200 OK");
 				out.write(makeHeader("200 OK", filename, file.length()));
 			}else{
-				file = new File("file_not_found.html");
+				file = new File("doc/file_not_found.html");
 				System.out.println("200 OK");
-				out.write(makeHeader("404 Not Found", "file_not_found.html", file.length()));
+				out.write(makeHeader("404 Not Found", "doc/file_not_found.html", file.length()));
 			}
 
 			BufferedInputStream fileIn = new BufferedInputStream(new FileInputStream(file));
@@ -92,7 +93,7 @@ public class WebServer {
 			byte[] buffer = new byte[256];
 			int nbRead;
 			while((nbRead = fileIn.read(buffer)) != -1) {
-				out.println(String.valueOf(buffer));
+				out.println(new String(buffer));
 			}
 			fileIn.close();
 
