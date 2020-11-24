@@ -80,12 +80,10 @@ public class WebServer {
 		try{
 			File file = new File(filename);
 			if(file.exists() && file.isFile()){
-				System.out.println("200 OK");
-				out.write(makeHeader("200 OK", filename, file.length()));
+				out.println(makeHeader("200 OK", filename, file.length()));
 			}else{
 				file = new File("doc/file_not_found.html");
-				System.out.println("200 OK");
-				out.write(makeHeader("404 Not Found", "doc/file_not_found.html", file.length()));
+				out.println(makeHeader("404 Not Found", "doc/file_not_found.html", file.length()));
 			}
 
 			BufferedInputStream fileIn = new BufferedInputStream(new FileInputStream(file));
@@ -103,6 +101,8 @@ public class WebServer {
 		}
 	}
 
+	//HTTP PUT method
+
 	protected String makeHeader(String status) {
 		String header = "HTTP/1.0 " + status + "\r\n";
 		header += "Server: Bot\r\n";
@@ -113,7 +113,7 @@ public class WebServer {
 	}
 
 	protected String makeHeader(String status, String filename, long length) {
-		String header = "HTTP/1.0 " + status + "\r\n";
+		String header = "HTTP/1.1 " + status + "\r\n";
 		if(filename.endsWith(".html") || filename.endsWith(".htm"))
 			header += "Content-Type: text/html\r\n";
 		else if(filename.endsWith(".mp4"))
