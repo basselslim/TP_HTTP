@@ -42,7 +42,7 @@ public class WebServer {
 			// remote is now the connected socket
 			System.out.println("Connection, sending data.");
 			BufferedReader in = new BufferedReader(new InputStreamReader(remote.getInputStream()));
-			PrintWriter out = new PrintWriter(remote.getOutputStream());
+			BufferedOutputStream out = new BufferedOutputStream(remote.getOutputStream());
 
 			// read the data sent. We basically ignore it,
 			// stop reading once a blank line is hit. This
@@ -64,7 +64,7 @@ public class WebServer {
 				httpGET(out, fileName);
 			}
 			// Send the HTML page
-			out.write("<H1>Welcome to the Ultra Mini-WebServer</H2>");
+			out.write(("<H1>Welcome to the Ultra Mini-WebServer</H2>").getBytes());
 			out.flush();
 			remote.close();
 			} catch (Exception e) {
@@ -74,16 +74,16 @@ public class WebServer {
 	}
 
 	//HTTP GET method
-	protected void httpGET(PrintWriter out, String filename){
+	protected void httpGET(BufferedOutputStream out, String filename){
 		System.out.println("GET " + filename);
 		filename = "doc/" + filename;
 		try{
 			File file = new File(filename);
 			if(file.exists() && file.isFile()){
-				out.println(makeHeader("200 OK", filename, file.length()));
+				out.write(makeHeader("200 OK", filename, file.length()).getBytes());
 			}else{
 				file = new File("doc/file_not_found.html");
-				out.println(makeHeader("404 Not Found", "doc/file_not_found.html", file.length()));
+				out.write(makeHeader("404 Not Found", "doc/file_not_found.html", file.length()).getBytes());
 			}
 
 			BufferedInputStream fileIn = new BufferedInputStream(new FileInputStream(file));
@@ -91,7 +91,7 @@ public class WebServer {
 			byte[] buffer = new byte[256];
 			int nbRead;
 			while((nbRead = fileIn.read(buffer)) != -1) {
-				out.println(new String(buffer));
+				out.write(buffer);
 			}
 			fileIn.close();
 
