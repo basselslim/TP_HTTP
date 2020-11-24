@@ -80,12 +80,10 @@ public class WebServer {
 		try{
 			File file = new File(filename);
 			if(file.exists() && file.isFile()){
-				System.out.println("200 OK");
-				out.write(makeHeader("200 OK", filename, file.length()));
+				out.println(makeHeader("200 OK", filename, file.length()));
 			}else{
 				file = new File("doc/file_not_found.html");
-				System.out.println("200 OK");
-				out.write(makeHeader("404 Not Found", "doc/file_not_found.html", file.length()));
+				out.println(makeHeader("404 Not Found", "doc/file_not_found.html", file.length()));
 			}
 
 			BufferedInputStream fileIn = new BufferedInputStream(new FileInputStream(file));
@@ -102,6 +100,8 @@ public class WebServer {
 			e.printStackTrace();
 		}
 	}
+
+	//HTTP PUT method
 
 	protected String makeHeader(String status) {
 		String header = "HTTP/1.0 " + status + "\r\n";
