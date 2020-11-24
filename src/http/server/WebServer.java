@@ -113,7 +113,7 @@ public class WebServer {
 	}
 
 	protected String makeHeader(String status, String filename, long length) {
-		String header = "HTTP/1.0 " + status + "\r\n";
+		String header = "HTTP/1.1 " + status + "\r\n";
 		if(filename.endsWith(".html") || filename.endsWith(".htm"))
 			header += "Content-Type: text/html\r\n";
 		else if(filename.endsWith(".mp4"))
