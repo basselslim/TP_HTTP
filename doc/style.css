@@ -1,0 +1,15 @@
+.parent {
+    margin-left: 20%;
+    margin-right: 20%;
+}
+
+p:hover {
+    color: coral;
+    transform: rotate(180deg);
+}
+
+p {
+    width: -moz-fit-content;
+    margin: 10%;
+    transition: color 1s, transform 2s;
+}
