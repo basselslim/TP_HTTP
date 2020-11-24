@@ -1,3 +1,3 @@
 function setCouleurBackground(couleur){
-    document.body.style.background = couleur;
+    document.body.style.backgroundColor = couleur;
 }
