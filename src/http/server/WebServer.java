@@ -293,14 +293,7 @@ public class WebServer {
 			header += "Content-Type: image/jpg\r\n";
 		else if(filename.endsWith(".mp3"))
 			header += "Content-Type: audio/mp3\r\n";
-		else if(filename.endsWith(".avi"))
-			header += "Content-Type: video/x-msvideo\r\n";
-		else if(filename.endsWith(".css"))
-			header += "Content-Type: text/css\r\n";
-		else if(filename.endsWith(".pdf"))
-			header += "Content-Type: application/pdf\r\n";
-		else if(filename.endsWith(".odt"))
-			header += "Content-Type: application/vnd.oasis.opendocument.text\r\n";
+
 		header += "Content-Length: " + length + "\r\n";
 		header += "Server: Bot\r\n";
 		header += "\r\n";
