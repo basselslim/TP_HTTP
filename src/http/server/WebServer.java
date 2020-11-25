@@ -7,19 +7,18 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 /**
- * Example program from Chapter 1 Programming Spiders, Bots and Aggregators in
- * Java Copyright 2001 by Jeff Heaton
- *
- * WebServer is a very simple web-server. Any request is responded with a very
- * simple web-page.
- *
- * @author Jeff Heaton
- * @version 1.0
+ * WebServer is a very simple web-server HTTP, it implements simple requests such as GET, HEAD, PUT, POST, and DELETE
+ * @author Bassel Slim et Clément Parret
  */
+
 public class WebServer {
 
 	/**
-	* WebServer constructor.
+	* Start the webserver on the port specified (here port is 3000).
+    * The web-server waits for a socket connection, then it receives a request, it sends the response according to the
+    * action asked, and it closed the socket connection.
+    * The web-server manages different errors: if client tries to access to a not found directory, if he tries to use a
+    * not-omplemented request...
 	*/
 	protected void start() {
 		ServerSocket s;
@@ -105,7 +104,14 @@ public class WebServer {
 		}
 	}
 
-	//HTTP GET method
+	/**
+	 * HTTP GET request implementation.
+	 * It opens and reads a file, then sends it to the client in a stream of bytes.
+	 * The response contains the header and the body of the ressource.
+	 * If the file is not found, the response contains the file file_not_found.html.
+	 * @param out Output stream in binary, containing the response.
+	 * @param filename Path of the file to get.
+	 */
 	protected void httpGET(BufferedOutputStream out, String filename){
 		System.out.println("GET " + filename);
 		try{
@@ -134,7 +140,14 @@ public class WebServer {
 		}
 	}
 
-	//HTTP HEAD method
+	/**
+	 * HTTP HEAD request implementation.
+	 * HEAD checks if a file exists and sends the header.
+	 * If the file is found, status is "200 OK", else it is "404 Not Found".
+	 * @param in Input stream in binary.
+	 * @param out Output stream in binary, containing the response.
+	 * @param filename Path of the file to get.
+	 */
 	protected void httpHEAD(BufferedInputStream in, BufferedOutputStream out, String filename) {
 		System.out.println("HEAD " + filename);
 		try{
@@ -155,7 +168,16 @@ public class WebServer {
 			} catch (Exception e2) {};
 		}
 	}
-	//HTTP PUT method
+
+	/**
+	 * HTTP PUT request implementation.
+	 * PUT request allows the client to write on an existing file or to create a new file. Only the header is sent.
+	 * If the specified file already exists, file is overwritten. The status is "204 No Content".
+	 * If the specified file does not exist, a new one is created. The status is "201 Created".
+	 * @param in Input stream in binary.
+	 * @param out Output stream in binary, containing the response.
+	 * @param filename Path of the file to create or modify.
+	 */
 	protected void httpPUT(BufferedInputStream in, BufferedOutputStream out, String filename){
 		System.out.println("PUT " + filename);
 		try {
@@ -198,7 +220,16 @@ public class WebServer {
 			} catch (Exception e2) {};
 		}
 	}
-	//HTTP POST method
+
+	/**
+	 * HTTP POST request implementation.
+	 * POST request allows the client to write on an existing file or to create a new file. Only the header is sent.
+	 * If the specified file already exists, it appends the body of the request to the file. The status is "200 OK".
+	 * If the specified file does not exist, a new one is created. The status is "201 Created".
+	 * @param in Input stream in binary.
+	 * @param out Output stream in binary, containing the response.
+	 * @param filename Path of the file to create or modify.
+	 */
 	protected void httpPOST(BufferedInputStream in, BufferedOutputStream out, String filename){
 		System.out.println("POST " + filename);
 		try {
@@ -237,7 +268,15 @@ public class WebServer {
 			} catch (Exception e2) {};
 		}
 	}
-	//HTTP DELETE method
+
+	/**
+	 * HTTP DELETE request implementation.
+	 * DELETE request allows the client to delete an existing file. Only the header is sent.
+	 * If the specified file already exists, it deletes the file. The status is "204 No Content".
+	 * If the specified file does not exist, the status is "404 Not Found".
+	 * @param out Output stream in binary, containing the response.
+	 * @param filename Path of the file to delete.
+	 */
 	protected void httpDELETE(BufferedOutputStream out, String filename){
 		System.out.println("DELETE " + filename);
 		try {
@@ -256,9 +295,6 @@ public class WebServer {
 			} else if (!existed) {
 				// File not found
 				out.write(makeHeader("404 Not Found").getBytes());
-			} else {
-				// File found but not deleted
-				out.write(makeHeader("403 Forbidden").getBytes());
 			}
 			// Sending the stream bytes
 			out.flush();
@@ -271,16 +307,29 @@ public class WebServer {
 		}
 	}
 
-
+	/**
+	 * Creates a header response for a request without body.
+	 * Header contains the Return Code and the name of the server
+	 * @param status Return Code.
+	 * @return the header of the response
+	 */
 	protected String makeHeader(String status) {
 		String header = "HTTP/1.1 " + status + "\r\n";
-		header += "Server: Bot\r\n";
+		header += "Server: MyServer\r\n";
 		header += "\r\n";
 		System.out.println("ANSWER HEADER :");
 		System.out.println(header);
 		return header;
 	}
 
+	/**
+	 * Creates a header response for a request with a body.
+	 * Header contains the Return Code and the name of the server
+	 * @param status Return Code.
+	 * @param filename Path of the file to return.
+	 * @param length Size of the file in bytes.
+	 * @return the header of the response.
+	 */
 	protected String makeHeader(String status, String filename, long length) {
 		String header = "HTTP/1.1 " + status + "\r\n";
 		if(filename.endsWith(".html") || filename.endsWith(".htm"))
@@ -295,7 +344,7 @@ public class WebServer {
 			header += "Content-Type: audio/mp3\r\n";
 
 		header += "Content-Length: " + length + "\r\n";
-		header += "Server: Bot\r\n";
+		header += "Server: MyServer\r\n";
 		header += "\r\n";
 		System.out.println("ANSWER HEADER :");
 		System.out.println(header);
